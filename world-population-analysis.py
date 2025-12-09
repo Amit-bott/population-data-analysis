@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import os
 
-# -------------------------------
-# CONFIG
-# -------------------------------
+
 st.set_page_config(
     page_title="World Data Dashboard",
     page_icon="🌍",
