@@ -92,7 +92,7 @@ elif menu == "Prediction":
     else:
         st.markdown("Enter features below to generate prediction:")
 
-        # Auto-generate numeric inputs
+        
         numeric_cols = ["Feature1", "Feature2", "Feature3"]  # <<< change to your real ML feature names
 
         inputs = {}
@@ -111,9 +111,7 @@ elif menu == "Prediction":
 
             st.success(f"Prediction: **{prediction}**")
 
-# -------------------------------
-# PAGE 4 – ABOUT NOTEBOOK
-# -------------------------------
+
 elif menu == "About Notebook":
     st.title("📘 World Population Notebook Summary")
 
