@@ -13,9 +13,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# -------------------------------
-# LOAD MODEL
-# -------------------------------
 @st.cache_resource
 def load_model():
     model_path = "model.pkl"       # change to your model filename
@@ -30,9 +27,6 @@ def load_model():
 
 model, scaler, imputer = load_model()
 
-# -------------------------------
-# LOAD CSV DATA
-# -------------------------------
 @st.cache_data
 def load_csv():
     file_path = "world_population.csv"   # your uploaded CSV
@@ -44,18 +38,14 @@ def load_csv():
 
 df = load_csv()
 
-# -------------------------------
-# SIDEBAR
-# -------------------------------
+
 st.sidebar.title("📌 Navigation")
 menu = st.sidebar.radio(
     "Go to:",
     ["Dashboard Overview", "Data Explorer", "Prediction", "About Notebook"]
 )
 
-# -------------------------------
-# PAGE 1 – DASHBOARD OVERVIEW
-# -------------------------------
+
 if menu == "Dashboard Overview":
     st.title("🌍 World Population Dashboard")
     st.markdown("Professional dashboard for dataset analysis + ML prediction.")
@@ -76,9 +66,7 @@ if menu == "Dashboard Overview":
         fig = px.line(df, x="Year", y="Population", color="Country", title="Population Over Time")
         st.plotly_chart(fig, use_container_width=True)
 
-# -------------------------------
-# PAGE 2 – DATA EXPLORER
-# -------------------------------
+
 elif menu == "Data Explorer":
     st.title("📊 Data Explorer")
 
@@ -95,9 +83,7 @@ elif menu == "Data Explorer":
         fig2 = px.box(df, x="Continent", y="Population")
         st.plotly_chart(fig2)
 
-# -------------------------------
-# PAGE 3 – PREDICTION
-# -------------------------------
+
 elif menu == "Prediction":
     st.title("🤖 ML Prediction System")
 
