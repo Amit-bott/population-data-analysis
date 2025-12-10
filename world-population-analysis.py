@@ -15,9 +15,9 @@ st.set_page_config(
 
 @st.cache_resource
 def load_model():
-    model_path = "model.pkl"       # change to your model filename
-    scaler_path = "scaler.pkl"     # optional
-    imputer_path = "imputer.pkl"   # optional
+    model_path = "model.pkl"       
+    scaler_path = "scaler.pkl"     
+    imputer_path = "imputer.pkl"   
     
     model = joblib.load(model_path) if os.path.exists(model_path) else None
     scaler = joblib.load(scaler_path) if os.path.exists(scaler_path) else None
@@ -29,7 +29,7 @@ model, scaler, imputer = load_model()
 
 @st.cache_data
 def load_csv():
-    file_path = "world_population.csv"   # your uploaded CSV
+    file_path = "world_population.csv"  
     if os.path.exists(file_path):
         return pd.read_csv(file_path)
     else:
@@ -93,7 +93,7 @@ elif menu == "Prediction":
         st.markdown("Enter features below to generate prediction:")
 
         
-        numeric_cols = ["Feature1", "Feature2", "Feature3"]  # <<< change to your real ML feature names
+        numeric_cols = ["Feature1", "Feature2", "Feature3"]
 
         inputs = {}
         for c in numeric_cols:
