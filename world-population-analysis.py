@@ -1,106 +1,119 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import joblib
-import matplotlib.pyplot as plt
 import plotly.express as px
 import os
 
-
+# ---------------- PAGE CONFIG ----------------
 st.set_page_config(
-    page_title="World Data Dashboard",
+    page_title="World Population Dashboard",
     page_icon="🌍",
     layout="wide"
 )
 
+# ---------------- LOAD MODEL ----------------
 @st.cache_resource
 def load_model():
-    model_path = "model.pkl"       
-    scaler_path = "scaler.pkl"     
-    imputer_path = "imputer.pkl"   
-    
-    model = joblib.load(model_path) if os.path.exists(model_path) else None
-    scaler = joblib.load(scaler_path) if os.path.exists(scaler_path) else None
-    imputer = joblib.load(imputer_path) if os.path.exists(imputer_path) else None
-    
+    model = joblib.load("model.pkl") if os.path.exists("model.pkl") else None
+    scaler = joblib.load("scaler.pkl") if os.path.exists("scaler.pkl") else None
+    imputer = joblib.load("imputer.pkl") if os.path.exists("imputer.pkl") else None
     return model, scaler, imputer
 
 model, scaler, imputer = load_model()
 
+# ---------------- LOAD CSV ----------------
 @st.cache_data
-def load_csv():
-    file_path = "world_population.csv"  
-    if os.path.exists(file_path):
-        return pd.read_csv(file_path)
-    else:
-        st.warning("CSV file not found. Upload world_population.csv in repository.")
-        return pd.DataFrame()
+def load_data():
+    return pd.read_csv("world_population.csv")
 
-df = load_csv()
+df = load_data()
 
-
+# ---------------- SIDEBAR ----------------
 st.sidebar.title("📌 Navigation")
 menu = st.sidebar.radio(
     "Go to:",
-    ["Dashboard Overview", "Data Explorer", "Prediction", "About Notebook"]
+    ["Dashboard Overview", "Data Explorer", "Prediction", "About"]
 )
 
-
+# ==================================================
+# DASHBOARD OVERVIEW
+# ==================================================
 if menu == "Dashboard Overview":
     st.title("🌍 World Population Dashboard")
-    st.markdown("Professional dashboard for dataset analysis + ML prediction.")
+    st.markdown("Professional interactive dashboard based on real world population data.")
 
-    if not df.empty:
-        col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
-        with col1:
-            st.metric("Total Countries", df["Country"].nunique())
+    with col1:
+        st.metric("🌐 Total Countries", df["Country/Territory"].nunique())
 
-        with col2:
-            st.metric("Total Continents", df["Continent"].nunique())
+    with col2:
+        st.metric("🗺 Total Continents", df["Continent"].nunique())
 
-        with col3:
-            st.metric("Latest Year", df["Year"].max())
+    with col3:
+        st.metric("📅 Latest Population Year", "2022")
 
-        st.subheader("📈 Population Trend Chart")
-        fig = px.line(df, x="Year", y="Population", color="Country", title="Population Over Time")
-        st.plotly_chart(fig, use_container_width=True)
+    # ---- Convert wide data to long format ----
+    pop_cols = [
+        '1970 Population', '1980 Population', '1990 Population',
+        '2000 Population', '2010 Population',
+        '2015 Population', '2020 Population', '2022 Population'
+    ]
 
+    df_long = df.melt(
+        id_vars=["Country/Territory", "Continent"],
+        value_vars=pop_cols,
+        var_name="Year",
+        value_name="Population"
+    )
 
+    df_long["Year"] = df_long["Year"].str.extract(r'(\d+)').astype(int)
+
+    st.subheader("📈 Population Growth Over Time")
+    fig = px.line(
+        df_long,
+        x="Year",
+        y="Population",
+        color="Country/Territory",
+        title="Population Growth by Country"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# ==================================================
+# DATA EXPLORER
+# ==================================================
 elif menu == "Data Explorer":
     st.title("📊 Data Explorer")
 
-    if df.empty:
-        st.error("CSV not loaded.")
-    else:
-        st.dataframe(df)
+    st.subheader("Full Dataset")
+    st.dataframe(df, use_container_width=True)
 
-        st.subheader("Distribution of Population")
-        fig = px.histogram(df, x="Population", nbins=50)
-        st.plotly_chart(fig)
+    st.subheader("Population Distribution (2022)")
+    fig1 = px.histogram(df, x="2022 Population", nbins=40)
+    st.plotly_chart(fig1, use_container_width=True)
 
-        st.subheader("Population by Continent")
-        fig2 = px.box(df, x="Continent", y="Population")
-        st.plotly_chart(fig2)
+    st.subheader("Population by Continent (2022)")
+    fig2 = px.box(df, x="Continent", y="2022 Population")
+    st.plotly_chart(fig2, use_container_width=True)
 
-
+# ==================================================
+# PREDICTION
+# ==================================================
 elif menu == "Prediction":
-    st.title("🤖 ML Prediction System")
+    st.title("🤖 Population Prediction")
 
     if model is None:
-        st.error("Model not found. Upload model.pkl to repository.")
+        st.warning("⚠ model.pkl not found. Upload trained ML model.")
     else:
-        st.markdown("Enter features below to generate prediction:")
+        st.markdown("Predict future population using past data.")
 
-        
-        numeric_cols = ["Feature1", "Feature2", "Feature3"]
-
-        inputs = {}
-        for c in numeric_cols:
-            inputs[c] = st.number_input(c, value=0.0)
+        pop_2015 = st.number_input("2015 Population", min_value=0)
+        pop_2020 = st.number_input("2020 Population", min_value=0)
+        growth_rate = st.number_input("Growth Rate", value=0.0)
 
         if st.button("Predict"):
-            X = pd.DataFrame([inputs])
+            X = pd.DataFrame([[pop_2015, pop_2020, growth_rate]],
+                             columns=["2015 Population", "2020 Population", "Growth Rate"])
 
             if imputer:
                 X = imputer.transform(X)
@@ -108,24 +121,24 @@ elif menu == "Prediction":
                 X = scaler.transform(X)
 
             prediction = model.predict(X)[0]
+            st.success(f"✅ Predicted Population: {int(prediction):,}")
 
-            st.success(f"Prediction: **{prediction}**")
-
-
-elif menu == "About Notebook":
-    st.title("📘 World Population Notebook Summary")
-
+# ==================================================
+# ABOUT
+# ==================================================
+else:
+    st.title("📘 About Project")
     st.markdown("""
-    This section provides information about the analysis performed in the Jupyter notebook.
-    
-    ### Included Steps
-    - Data Cleaning  
-    - Exploratory Data Analysis  
-    - Visualizations  
-    - Feature Engineering  
-    - ML Model Training  
-    - Evaluation Metrics  
-    """)
+    ### 🌍 World Population Analysis Dashboard
 
-    st.info("Upload the `.ipynb` file in the repo. It will be shown automatically in future update.")
+    **Features**
+    - Interactive charts
+    - Country & continent level analysis
+    - Time-series population growth
+    - Machine Learning based prediction
+    - Streamlit web application
+
+    **Dataset Source**
+    - World Population Dataset (1970–2022)
+    """)
 
