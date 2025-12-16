@@ -35,9 +35,7 @@ menu = st.sidebar.radio(
     ["Dashboard Overview", "Data Explorer", "Prediction", "About"]
 )
 
-# ==================================================
-# DASHBOARD OVERVIEW
-# ==================================================
+
 if menu == "Dashboard Overview":
     st.title("🌍 World Population Dashboard")
     st.markdown("Professional interactive dashboard based on real world population data.")
