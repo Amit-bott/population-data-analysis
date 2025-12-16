@@ -123,9 +123,7 @@ elif menu == "Prediction":
             prediction = model.predict(X)[0]
             st.success(f"✅ Predicted Population: {int(prediction):,}")
 
-# ==================================================
-# ABOUT
-# ==================================================
+
 else:
     st.title("📘 About Project")
     st.markdown("""
