@@ -79,9 +79,7 @@ if menu == "Dashboard Overview":
     )
     st.plotly_chart(fig, use_container_width=True)
 
-# ==================================================
-# DATA EXPLORER
-# ==================================================
+
 elif menu == "Data Explorer":
     st.title("📊 Data Explorer")
 
@@ -96,9 +94,7 @@ elif menu == "Data Explorer":
     fig2 = px.box(df, x="Continent", y="2022 Population")
     st.plotly_chart(fig2, use_container_width=True)
 
-# ==================================================
-# PREDICTION
-# ==================================================
+
 elif menu == "Prediction":
     st.title("🤖 Population Prediction")
 
