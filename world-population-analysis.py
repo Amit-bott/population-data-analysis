@@ -3,7 +3,6 @@ import pandas as pd
 import joblib
 import plotly.express as px
 import os
-
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
     page_title="World Population Dashboard",
