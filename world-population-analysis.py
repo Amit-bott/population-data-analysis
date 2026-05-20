@@ -131,4 +131,3 @@ else:
     **Dataset Source**
     - World Population Dataset (1970–2022)
     """)
-
